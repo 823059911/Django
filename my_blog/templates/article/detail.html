@@ -1,0 +1,105 @@
+<!-- extends表明此页面继承自 base.html 文件 -->
+{% extends "base.html" %}
+{% load staticfiles %}
+
+<!-- 写入 base.html 中定义的 title -->
+{% block title %}
+    Article Detail
+{% endblock title %}
+
+<!-- 写入 base.html 中定义的 content -->
+{% block content %}
+
+<!-- 文章详情 -->
+<div class="container">
+    <div class="row">
+        <!-- 标题及作者 -->
+        <h1 class="col-12 mt-4 mb-4">{{ article.title }}</h1>
+        <div class="col-12 alert alert-success">
+            Author：{{ article.author }} · 
+           {% if user == article.author %}
+                    · <a href="{% url "article:article_delete" article.id %}"> Delete </a>
+                    · <a href="{% url "article:article_update" article.id %}"> Edit </a>
+                {% endif %}
+        </div>
+        <!-- 文章正文 -->
+        <div class="col-12">
+            <p>{{ article.body|safe }}</p>
+        </div>
+        <!-- 发表评论 -->
+    <hr>
+    {% if user.is_authenticated %}
+        <div>
+            <form 
+                action="{% url 'comment:post_comment' article.id %}" 
+                method="POST"
+            >
+            {% csrf_token %}
+                <div class="form-group">
+                    <label for="body">
+                        <strong>
+                            I want to comment：
+                        </strong>
+                    </label>
+                    <textarea 
+                        type="text" 
+                        class="form-control" 
+                        id="body" 
+                        name="body" 
+                        rows="2"></textarea>
+                </div>
+                <!-- 提交按钮 -->
+                <button type="submit" class="btn btn-dark ">Send</button>                    
+            </form>
+        </div>
+        <br>
+    {% else %}
+        <br>
+        <h6 class="row justify-content-center">
+            Please<a href="{% url 'userprofile:login' %}">login</a>
+        </h6>
+        <br>
+    {% endif %}
+    
+
+
+    <!-- 显示评论 -->
+    <h5>There're {{ comments.count }} comments</h5>
+    <div>
+        {% for comment in comments %}
+            <hr>
+            <p>
+                <strong style="color: pink">
+                    {{ comment.user }}
+                </strong> wrote in 
+                <span style="color: green">
+                    {{ comment.created|date:"Y-m-d H:i:s" }}
+                </span> ：
+            </p>
+            <pre style="font-family: inherit; font-size: 1em;">
+{{ comment.body }}</pre>
+        {% endfor %}
+    </div>
+</div>
+    </div>
+</div>
+
+<script>
+    // 删除文章的函数
+    function confirm_delete() {
+        // 调用layer弹窗组件
+        layer.open({
+            // 弹窗标题
+            title: "Delete",
+            // 正文
+            content: "Are you sure？",
+            // 点击确定按钮后调用的回调函数
+            yes: function(index, layero) {
+                // 指定应当前往的 url
+                location.href='{% url "article:article_delete" article.id %}'
+            },
+        })
+    }
+</script>
+
+{% endblock content %}

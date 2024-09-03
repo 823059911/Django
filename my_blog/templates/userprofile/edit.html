@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+{% load staticfiles %}
+{% block title %} Account Information {% endblock title %}
+
+{% block content %}
+<div class="container">
+    <div class="row">
+        <div class="col-12">
+            <!-- 添加代码显示、处理用户的头像 -->
+            {% if profile.avatar %}
+                <div class="col-md-4">Profile Picture</div>
+                <img src="{{ profile.avatar.url }}" style="max-width: 20%; border-radius: 15%;" class="col-md-4">
+            {% else %}
+                <h5 class="col-md-4">There's No Picture yet</h5>
+            {% endif %}
+            
+            <br>
+            <br>
+
+            <!-- 统一的表单 -->
+            <form method="post" action="." enctype="multipart/form-data">
+                {% csrf_token %}
+                
+                <!-- avatar -->
+                <div class="form-group">
+                    <label for="avatar">Upload Picture</label>
+                    <input type="file" class="form-control-file" name="avatar" id="avatar">
+                </div>
+                
+                <br>
+                
+                <!-- 用户名显示 -->
+                <div class="col-md-4">Username: {{ user.username }}</div>
+                
+                <br>
+                
+                <!-- phone -->
+                <div class="form-group col-md-4">
+                    <label for="phone">Phone</label>
+                    <input type="text" class="form-control" id="phone" name="phone" value="{{ profile.phone }}">
+                </div>
+                
+                <!-- bio -->
+                <div class="form-group col-md-4">
+                    <label for="bio">Biography</label>
+                    <textarea class="form-control" id="bio" name="bio" rows="12">{{ profile.bio }}</textarea>
+                </div>
+                
+                <!-- 提交按钮 -->
+                <button type="submit" class="btn btn-dark">Submit</button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock content %}
